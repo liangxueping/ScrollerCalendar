@@ -1,0 +1,51 @@
+package com.lxp.component.calendar;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.Gravity;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.lxp.component.calendar.CalendarCard.OnCellBackListener;
+
+@SuppressLint("ClickableViewAccessibility") 
+public class ScrollerMonth extends LinearLayout{
+
+	private Context mContext;
+	private LinearLayout layoutWeek;
+	private ScrollerCalendar scrollerCalendar;
+	
+	public ScrollerMonth(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		mContext = context;
+		setOrientation(VERTICAL);
+		createView();
+	}
+	
+	private void createView(){
+		//创建周表头容器
+		layoutWeek = new LinearLayout(mContext);
+		layoutWeek.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		layoutWeek.setOrientation(HORIZONTAL);
+		addView(layoutWeek);
+		//创建周表头元素
+		for (int i = 0; i < 7; i++){
+			TextView tvWeek = new TextView(mContext);
+			tvWeek.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
+			tvWeek.setGravity(Gravity.CENTER);
+			tvWeek.setText(DateUtil.weekName[i]);
+			layoutWeek.addView(tvWeek);
+		}
+		scrollerCalendar = new ScrollerCalendar(mContext);
+		addView(scrollerCalendar);
+	}
+
+	public void setCallBackListener(OnCellBackListener callBackListener){
+		scrollerCalendar.setOnCellClickListener(callBackListener);
+	}
+	
+	public void scrollToToday(){
+		scrollerCalendar.scrollToToday();
+	}
+}
