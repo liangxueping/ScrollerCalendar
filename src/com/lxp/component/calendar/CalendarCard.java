@@ -75,7 +75,7 @@ public class CalendarCard extends View {
   
     private void fillDate() {
         int monthDay = DateUtil.getCurrentMonthDay(); // 今天 
-        int lastMonthDays = DateUtil.getMonthDays(mShowDate.year, mShowDate.month - 1); // 上个月的天数 
+//        int lastMonthDays = DateUtil.getMonthDays(mShowDate.year, mShowDate.month - 1); // 上个月的天数 
         int currentMonthDays = DateUtil.getMonthDays(mShowDate.year, mShowDate.month); // 当前月的天数 
         int firstDayWeek = DateUtil.getWeekDayFromDate(mShowDate.year, mShowDate.month); 
         boolean isCurrentMonth = false; 
@@ -104,14 +104,15 @@ public class CalendarCard extends View {
                     if (isCurrentMonth && day > monthDay) { // 如果比这个月的今天要大，表示还没到 
                         rows[j].cells[i] = new Cell(CustomDate.modifiDayForObject(mShowDate, day), State.UNREACH_DAY, i, j); 
                     } 
-  
-                    // 过去一个月 
-                } else if (position < firstDayWeek) { 
-                    rows[j].cells[i] = new Cell(new CustomDate(mShowDate.year, mShowDate.month - 1, lastMonthDays - (firstDayWeek - position - 1)), State.PAST_MONTH_DAY, i, j); 
-                    // 下个月 
-                } else if (position >= firstDayWeek + currentMonthDays) { 
-                    rows[j].cells[i] = new Cell((new CustomDate(mShowDate.year, mShowDate.month + 1, position - firstDayWeek - currentMonthDays + 1)), State.NEXT_MONTH_DAY, i, j); 
                 } 
+//                else if (position < firstDayWeek) { 
+//                	// 过去一个月 
+//                    rows[j].cells[i] = new Cell(new CustomDate(mShowDate.year, mShowDate.month - 1, lastMonthDays - (firstDayWeek - position - 1)), State.PAST_MONTH_DAY, i, j); 
+//                } 
+//                else if (position >= firstDayWeek + currentMonthDays) { 
+//                	// 下个月 
+//                    rows[j].cells[i] = new Cell((new CustomDate(mShowDate.year, mShowDate.month + 1, position - firstDayWeek - currentMonthDays + 1)), State.NEXT_MONTH_DAY, i, j); 
+//                }
             } 
         }
     } 
@@ -145,7 +146,7 @@ public class CalendarCard extends View {
         }
         result = mCellSpace*rowCount;
         return result;  
-    }  
+    }
   
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -190,7 +191,7 @@ public class CalendarCard extends View {
         if (mClickCell != null) { 
             rows[mClickCell.j].cells[mClickCell.i] = mClickCell; 
         } 
-        if (rows[row] != null) { 
+        if (rows[row] != null && rows[row].cells[col] != null) { 
             mClickCell = new Cell(rows[row].cells[col].date, 
                     rows[row].cells[col].state, rows[row].cells[col].i, 
                     rows[row].cells[col].j); 

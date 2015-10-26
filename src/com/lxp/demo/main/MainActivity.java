@@ -68,7 +68,9 @@ public class MainActivity extends Activity{
 			@Override
 			public void onClick(View v) {
 				scrollerMonth.scrollToToday();
-				tvChange.performClick();
+				if(isShowMonth){
+					tvChange.performClick();
+				}
 			}
 		});
 	}

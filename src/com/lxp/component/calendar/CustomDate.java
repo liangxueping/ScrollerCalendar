@@ -75,6 +75,18 @@ public class CustomDate implements Serializable{
   
     public void setWeek(int week) { 
         this.week = week; 
-    } 
-  
+    }
+
+    public int getHeightByWidth(int width) {
+    	int cellSpace = width/7;
+        int result = 0;  
+        int currentMonthDays = DateUtil.getMonthDays(year, month); // 当前月的天数 
+        int firstDayWeek = DateUtil.getWeekDayFromDate(year, month); 
+        int rowCount = (currentMonthDays+firstDayWeek-1)/7+1;
+        if((currentMonthDays+firstDayWeek-1)%7 != 0){
+        	rowCount++;
+        }
+        result = cellSpace*rowCount;
+        return result;  
+    }
 }

@@ -9,6 +9,8 @@ import android.content.res.TypedArray;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
 import android.widget.AbsListView;
 
 import com.lxp.component.calendar.CalendarCard.OnCellBackListener;
@@ -21,6 +23,7 @@ public class ScrollerCalendar extends RecyclerView
     private OnCellBackListener onCellClickListener;
 	protected LinearLayoutManager layoutManager;
 	private ArrayList<CustomDate> dataList;
+	private int positionForToday;
 
     public ScrollerCalendar(Context context)
     {
@@ -54,6 +57,20 @@ public class ScrollerCalendar extends RecyclerView
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
                 super.onScrolled(recyclerView, dx, dy);
+                View firstView = getChildAt(0);
+        		int top = firstView.getTop();
+                if(getScrollState() == RecyclerView.SCROLL_STATE_SETTLING){
+                	if(dy < 0 && dy > -20){
+                    	stopScroll();
+                    	smoothScrollBy(0, top < -80 ? -80 : top);
+                	}
+                	else if(dy > 1 && dy < 20 && top < 80){
+                		top = firstView.getHeight() + top;
+                    	stopScroll();
+                    	smoothScrollBy(0, top > 80 ? 80 : top);
+                	}
+                	//Log.d("liang", "scrollY:"+top + " dy:"+dy + " scrollY/dy:"+(top/dy));
+                }
             }
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -71,6 +88,7 @@ public class ScrollerCalendar extends RecyclerView
                     	for (int i = 0; i < DATE_LENGTH; i++){
                     		dataList.add(0, new CustomDate(dataList.get(0).year, dataList.get(0).month-1));
                         	calendarAdapter.notifyItemInserted(0);
+                        	positionForToday++;
                     	}
                     }
             	}
@@ -78,16 +96,17 @@ public class ScrollerCalendar extends RecyclerView
         });
 	}
 	public void scrollToToday(){
-		int currentYear = DateUtil.getYear();
-		int currentMonth = DateUtil.getMonth();
-		for (int i = 0; i < dataList.size(); i++){
-			CustomDate item = dataList.get(i);
-			if(currentYear == item.year && currentMonth == item.month){
-				scrollToPosition(i);
-				break;
-			}
+		scrollToPosition(positionForToday);
+		
+		CalendarCard card = (CalendarCard) getChildAt(1);
+		CustomDate itemDate = card.getShowDate();
+		CustomDate today = new CustomDate();
+		if(itemDate.year*100+itemDate.month < today.year*100+today.month){
+			smoothScrollBy(0, 80);
 		}
+		Log.d("liang", "itemDate:"+itemDate.toString());
 	}
+	
     public void setOnCellClickListener(OnCellBackListener onCellClickListener)
     {
         this.onCellClickListener = onCellClickListener;
@@ -98,7 +117,8 @@ public class ScrollerCalendar extends RecyclerView
 		if (calendarAdapter == null) {
 			calendarAdapter = new CalendarAdapter(getContext(), onCellClickListener, typedArray, createData());
         }
-		scrollToPosition(calendarAdapter.getItemCount() / 2);
+		positionForToday = calendarAdapter.getItemCount() / 2;
+		scrollToPosition(positionForToday);
 		calendarAdapter.notifyDataSetChanged();
 		setAdapter(calendarAdapter);
 	}
