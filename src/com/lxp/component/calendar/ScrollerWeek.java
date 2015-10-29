@@ -10,7 +10,10 @@ import android.view.GestureDetector.OnGestureListener;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AnimationUtils;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
@@ -21,7 +24,6 @@ import android.widget.ViewFlipper;
 
 import com.lxp.component.calendar.CalendarHourCard.MyEvent;
 import com.lxp.component.calendar.CalendarHourCard.OnHourCardListener;
-import com.lxp.demo.R;
 
 @SuppressLint("ClickableViewAccessibility") 
 public class ScrollerWeek extends LinearLayout implements OnGestureListener{
@@ -194,8 +196,33 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 					+ dateAdapter.getCurrentDay(selectPostion) + "日");
 			gvFlag++;
 			viewFlipper.addView(gridView, gvFlag);
-			this.viewFlipper.setInAnimation(AnimationUtils.loadAnimation(mContext, R.anim.push_left_in));
-			this.viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(mContext, R.anim.push_left_out));
+			//设置由左向左移动的进入动画
+			AnimationSet animationSetLeftIn = new AnimationSet(true);
+			TranslateAnimation translateAnimationLeftIn = new TranslateAnimation(
+					Animation.RELATIVE_TO_PARENT, 1.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f);
+			translateAnimationLeftIn.setDuration(500);
+			AlphaAnimation alphaAnimationLeftIn = new AlphaAnimation(0.1f, 1.0f);
+			alphaAnimationLeftIn.setDuration(500);
+			animationSetLeftIn.addAnimation(translateAnimationLeftIn);
+			animationSetLeftIn.addAnimation(alphaAnimationLeftIn);
+			//设置由左向左移动的走出动画
+			AnimationSet animationSetLeftOut = new AnimationSet(true);
+			TranslateAnimation translateAnimationLeftOut = new TranslateAnimation(
+					Animation.RELATIVE_TO_PARENT, 0.0f,
+					Animation.RELATIVE_TO_PARENT, -1.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f);
+			translateAnimationLeftOut.setDuration(500);
+			AlphaAnimation alphaAnimationLeftOut = new AlphaAnimation(1.0f, 0.1f);
+			alphaAnimationLeftOut.setDuration(500);
+			animationSetLeftOut.addAnimation(translateAnimationLeftOut);
+			animationSetLeftOut.addAnimation(alphaAnimationLeftOut);
+			
+			this.viewFlipper.setInAnimation(animationSetLeftIn);
+			this.viewFlipper.setOutAnimation(animationSetLeftOut);
 			this.viewFlipper.showNext();
 			viewFlipper.removeViewAt(0);
 			return true;
@@ -210,8 +237,35 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 					+ dateAdapter.getCurrentDay(selectPostion) + "日");
 			gvFlag++;
 			viewFlipper.addView(gridView, gvFlag);
-			this.viewFlipper.setInAnimation(AnimationUtils.loadAnimation(mContext, R.anim.push_right_in));
-			this.viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(mContext, R.anim.push_right_out));
+			
+			//设置由左向右移动的进入动画
+			AnimationSet animationSetRightIn = new AnimationSet(true);
+			TranslateAnimation translateAnimationRightIn = new TranslateAnimation(
+					Animation.RELATIVE_TO_PARENT, -1.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f);
+			translateAnimationRightIn.setDuration(500);
+			AlphaAnimation alphaAnimationRightIn = new AlphaAnimation(0.1f, 1.0f);
+			alphaAnimationRightIn.setDuration(500);
+			animationSetRightIn.addAnimation(translateAnimationRightIn);
+			animationSetRightIn.addAnimation(alphaAnimationRightIn);
+			//设置由左向右移动的走出动画
+			AnimationSet animationSetRightOut = new AnimationSet(true);
+			TranslateAnimation translateAnimationRightOut = new TranslateAnimation(
+					Animation.RELATIVE_TO_PARENT, 0.0f,
+					Animation.RELATIVE_TO_PARENT, 1.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f,
+					Animation.RELATIVE_TO_PARENT, 0.0f);
+			translateAnimationRightOut.setDuration(500);
+			AlphaAnimation alphaAnimationRightOut = new AlphaAnimation(1.0f, 0.1f);
+			alphaAnimationRightOut.setDuration(500);
+			animationSetRightOut.addAnimation(translateAnimationRightOut);
+			animationSetRightOut.addAnimation(alphaAnimationRightOut);
+			
+			this.viewFlipper.setInAnimation(animationSetRightIn);
+			this.viewFlipper.setOutAnimation(animationSetRightOut);
+			
 			this.viewFlipper.showPrevious();
 			viewFlipper.removeViewAt(0);
 			return true;
