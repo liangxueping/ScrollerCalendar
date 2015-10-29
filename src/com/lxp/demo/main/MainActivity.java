@@ -102,6 +102,7 @@ public class MainActivity extends Activity{
 				public void onAnimationStart(Animation animation) {
 					scrollerWeek.setVisibility(View.GONE);
 					scrollerMonth.setVisibility(View.VISIBLE);
+					scrollerMonth.updateScroll();
 				}
 				@Override
 				public void onAnimationRepeat(Animation animation) {}

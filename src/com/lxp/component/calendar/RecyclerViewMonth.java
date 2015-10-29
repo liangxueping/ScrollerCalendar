@@ -23,6 +23,7 @@ import com.lxp.component.calendar.CalendarMonthCard.OnCellBackListener;
 	protected LinearLayoutManager layoutManager;
 	private ArrayList<CustomDate> dataList;
 	private int positionForToday;
+	private CustomDate scrollDate;
 
     public RecyclerViewMonth(Context context)
     {
@@ -96,9 +97,8 @@ import com.lxp.component.calendar.CalendarMonthCard.OnCellBackListener;
 	}
 	public void scrollToToday(){
 		scrollToPosition(positionForToday);
-		
-		CalendarMonthCard card = (CalendarMonthCard) getChildAt(1);
-		if(card != null){
+		if(getChildCount() > 1){
+			CalendarMonthCard card = (CalendarMonthCard) getChildAt(1);
 			CustomDate itemDate = card.getShowDate();
 			CustomDate today = new CustomDate();
 			if(itemDate.year*100+itemDate.month <= today.year*100+today.month){
@@ -108,6 +108,7 @@ import com.lxp.component.calendar.CalendarMonthCard.OnCellBackListener;
 	}
 	
 	public void scrollToDay(CustomDate day){
+		scrollDate = day;
 		for (int i = 0; i < dataList.size(); i++){
 			CustomDate item = dataList.get(i);
 			if(item.year == day.year && item.month == day.month){
@@ -115,12 +116,23 @@ import com.lxp.component.calendar.CalendarMonthCard.OnCellBackListener;
 				break;
 			}
 		}
-		CalendarMonthCard card = (CalendarMonthCard) getChildAt(1);
-		if(card != null){
+		if(getChildCount() > 1){
+			CalendarMonthCard card = (CalendarMonthCard) getChildAt(1);
 			CustomDate itemDate = card.getShowDate();
 			if(itemDate.year*100+itemDate.month <= day.year*100+day.month){
 				smoothScrollBy(0, 80);
-			}	
+			}
+		}
+	}
+	
+	public void updateScroll(){
+		if(scrollDate != null && getChildCount() > 1){
+			CalendarMonthCard card = (CalendarMonthCard) getChildAt(1);
+			CustomDate itemDate = card.getShowDate();
+			if(itemDate.year*100+itemDate.month <= scrollDate.year*100+scrollDate.month){
+				smoothScrollBy(0, 80);
+			}
+			scrollDate = null;
 		}
 	}
 	

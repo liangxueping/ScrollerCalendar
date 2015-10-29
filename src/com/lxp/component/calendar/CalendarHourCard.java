@@ -80,9 +80,9 @@ public class CalendarHourCard extends View {
         event1.id = "1";
         event1.type = 1;
         event1.date = "20151027";
-        event1.title = "测试";
-        event1.classNum = "GWY151415";
-        event1.site = "海淀大钟寺校区437教师";
+        event1.title = "标题";
+        event1.classNum = "BJ010005678";
+        event1.site = "北京市海淀区中关村创业大街";
         event1.cause = "1";
         event1.startHour = 8;
         event1.startMinute = 0;

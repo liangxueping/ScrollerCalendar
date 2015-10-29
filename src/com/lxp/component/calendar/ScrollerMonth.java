@@ -54,4 +54,8 @@ public class ScrollerMonth extends LinearLayout{
 	public void scrollToToday(CustomDate day){
 		scrollerCalendar.scrollToDay(day);
 	}
+	
+	public void updateScroll(){
+		scrollerCalendar.updateScroll();
+	}
 }
