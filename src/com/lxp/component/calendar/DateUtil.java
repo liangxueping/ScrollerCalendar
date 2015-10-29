@@ -9,8 +9,20 @@ import android.annotation.SuppressLint;
   
   
 public class DateUtil { 
-  
-    public static String[] weekName = { "周一", "周二", "周三", "周四", "周五", "周六", "周日"}; 
+
+    /**
+     * 系统获取的默认值
+     * 日	一	二	三	四	五	六
+     * 1	2	3	4	5	6	7
+     * 减1之后的默认值
+     * 日	一	二	三	四	五	六
+     * 0	1	2	3	4	5	6
+     * 显示顺序
+     * 日	一	二	三	四	五	六
+     * 1	2	3	4	5	6	7
+     */
+    private static int[] WEEKS_INDEX = {1, 2, 3, 4, 5, 6, 7};
+    public static String[] WEEKS_NAME = {"周日", "周一", "周二", "周三", "周四", "周五", "周六"}; 
   
     public static int getMonthDays(int year, int month) { 
         if (month > 12) { 
@@ -87,25 +99,24 @@ public class DateUtil {
         int week_index = cal.get(Calendar.WEEK_OF_MONTH);
         return week_index;
     }
-    
     public static int getWeekDayFromDate(int year, int month) { 
         Calendar cal = Calendar.getInstance(); 
         cal.setTime(getDateFromString(year, month)); 
         int week_index = cal.get(Calendar.DAY_OF_WEEK) - 1; 
-        if(week_index == 0){
-        	week_index = 7;
-        }
-        return week_index;
+//        if(week_index == 0){
+//        	week_index = 7;
+//        }
+        return WEEKS_INDEX[week_index];
     }
 
     public static int getWeekDayFromDate(int year, int month, int day) { 
         Calendar cal = Calendar.getInstance(); 
         cal.setTime(getDateFromString(year, month, day)); 
         int week_index = cal.get(Calendar.DAY_OF_WEEK) - 1; 
-        if(week_index == 0){
-        	week_index = 7;
-        }
-        return week_index;
+//        if(week_index == 0){
+//        	week_index = 7;
+//        }
+        return WEEKS_INDEX[week_index];
     }
   
     @SuppressLint("SimpleDateFormat") 
@@ -140,5 +151,5 @@ public class DateUtil {
       
     public static boolean isCurrentMonth(CustomDate date){ 
         return(date.year == DateUtil.getYear() && date.month == DateUtil.getMonth()); 
-    } 
+    }
 }

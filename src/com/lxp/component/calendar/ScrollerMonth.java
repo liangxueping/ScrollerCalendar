@@ -2,19 +2,20 @@ package com.lxp.component.calendar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.lxp.component.calendar.CalendarCard.OnCellBackListener;
+import com.lxp.component.calendar.CalendarMonthCard.OnCellBackListener;
 
 @SuppressLint("ClickableViewAccessibility") 
 public class ScrollerMonth extends LinearLayout{
 
 	private Context mContext;
 	private LinearLayout layoutWeek;
-	private ScrollerCalendar scrollerCalendar;
+	private RecyclerViewMonth scrollerCalendar;
 	
 	public ScrollerMonth(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -34,10 +35,11 @@ public class ScrollerMonth extends LinearLayout{
 			TextView tvWeek = new TextView(mContext);
 			tvWeek.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
 			tvWeek.setGravity(Gravity.CENTER);
-			tvWeek.setText(DateUtil.weekName[i]);
+			tvWeek.setText(DateUtil.WEEKS_NAME[i]);
+			tvWeek.setTextColor(Color.parseColor(ConstantCalendar.COLOR_TEXT_TITLE_BLACK));
 			layoutWeek.addView(tvWeek);
 		}
-		scrollerCalendar = new ScrollerCalendar(mContext);
+		scrollerCalendar = new RecyclerViewMonth(mContext);
 		addView(scrollerCalendar);
 	}
 
@@ -47,5 +49,9 @@ public class ScrollerMonth extends LinearLayout{
 	
 	public void scrollToToday(){
 		scrollerCalendar.scrollToToday();
+	}
+	
+	public void scrollToToday(CustomDate day){
+		scrollerCalendar.scrollToDay(day);
 	}
 }

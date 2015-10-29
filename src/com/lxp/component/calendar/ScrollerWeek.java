@@ -15,9 +15,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.lxp.component.calendar.CalendarHourCard.MyEvent;
+import com.lxp.component.calendar.CalendarHourCard.OnHourCardListener;
 import com.lxp.demo.R;
 
 @SuppressLint("ClickableViewAccessibility") 
@@ -27,13 +30,26 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 	private LinearLayout layoutWeek;
 	private ViewFlipper viewFlipper;
 	private GridView gridView;
-	private WeekAdapter dateAdapter;
+	private CalendarWeekAdapter dateAdapter;
 	private TextView tvDate;
 
 	private GestureDetector gestureDetector;
 	private int selectPostion;
-	
-	
+	private OnScrollerWeekListener onScrollerWeekListener;
+	public void setOnScrollerWeekListener(
+			OnScrollerWeekListener onScrollerWeekListener) {
+		this.onScrollerWeekListener = onScrollerWeekListener;
+	}
+	private OnHourCardListener onHourCardListener;
+	private ScrollView scrollView;
+    public void setOnHourCardListener(OnHourCardListener onHourCardListener) {
+		this.onHourCardListener = onHourCardListener;
+	}
+    
+	public interface OnScrollerWeekListener {
+		public abstract void onItemClick(CustomDate date);
+
+	}
 	
 	public ScrollerWeek(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -54,7 +70,8 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 			TextView tvWeek = new TextView(mContext);
 			tvWeek.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
 			tvWeek.setGravity(Gravity.CENTER);
-			tvWeek.setText(DateUtil.weekName[i]);
+			tvWeek.setText(DateUtil.WEEKS_NAME[i]);
+			tvWeek.setTextColor(Color.parseColor(ConstantCalendar.COLOR_TEXT_TITLE_BLACK));
 			layoutWeek.addView(tvWeek);
 		}
 		
@@ -65,8 +82,11 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 		
 		//创建当前日期显示元素
 		tvDate = new TextView(mContext);
-		tvDate.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		LayoutParams tvDateParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tvDateParams.setMargins(0, 0, 0, 10);
+		tvDate.setLayoutParams(tvDateParams);
 		tvDate.setGravity(Gravity.CENTER);
+		tvDate.setTextColor(Color.parseColor(ConstantCalendar.COLOR_TEXT_TITLE_BLACK));
 		addView(tvDate);
 		
 		//创建周日期元素
@@ -74,11 +94,34 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 		int currentMonth = DateUtil.getMonth();
 		int currentDay = DateUtil.getCurrentMonthDay();
 		tvDate.setText(currentYear + "年" + currentMonth + "月" + currentDay + "日");
-		dateAdapter = new WeekAdapter(mContext, currentYear, currentMonth, currentDay);
+		dateAdapter = new CalendarWeekAdapter(mContext, currentYear, currentMonth, currentDay);
 		createGridView();
 		gridView.setAdapter(dateAdapter);
 		selectPostion = dateAdapter.getSelectPosition();
 		viewFlipper.addView(gridView, 0);
+		//创建分割线
+		View lineMark = new View(mContext);
+		android.view.ViewGroup.LayoutParams lineMarkParams = new LayoutParams(LayoutParams.MATCH_PARENT, 1);
+		lineMark.setBackgroundColor(Color.parseColor(ConstantCalendar.COLOR_LINE_DEFAULT));
+		lineMark.setLayoutParams(lineMarkParams);
+		addView(lineMark);
+		
+		scrollView = new ScrollView(mContext);
+		scrollView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		scrollView.setVerticalScrollBarEnabled(false);
+		addView(scrollView);
+		
+		CalendarHourCard hourCard = new CalendarHourCard(mContext);
+		hourCard.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		hourCard.setOnHourCardListener(new OnHourCardListener() {
+			@Override
+			public void onItemClickEvent(MyEvent event) {
+				if(onHourCardListener != null){
+					onHourCardListener.onItemClickEvent(event);
+				}
+			}
+		});
+		scrollView.addView(hourCard);
 	}
 	
 	public void setDate(int year, int month, int day){
@@ -108,9 +151,13 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 				selectPostion = position;
 				dateAdapter.setSeclection(selectPostion);
 				dateAdapter.notifyDataSetChanged();
-				tvDate.setText(dateAdapter.getCurrentYear(selectPostion) + "年"
-						+ dateAdapter.getCurrentMonth(selectPostion) + "月"
-						+ dateAdapter.getCurrentDay(selectPostion) + "日");
+				int year = dateAdapter.getCurrentYear(selectPostion);
+				int month = dateAdapter.getCurrentMonth(selectPostion);
+				int day = dateAdapter.getCurrentDay(selectPostion);
+				tvDate.setText(year + "年" + month + "月" + day + "日");
+				if(onScrollerWeekListener != null){
+					onScrollerWeekListener.onItemClick(new CustomDate(year, month, day));
+				}
 			}
 		});
 		gridView.setLayoutParams(params);
@@ -118,6 +165,7 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 	@Override
 	public void onWindowFocusChanged(boolean hasWindowFocus) {
 		super.onWindowFocusChanged(hasWindowFocus);
+		scrollView.scrollTo(0, CalendarHourCard.CELL_SPACE * 7);
 	}
 
 	
@@ -139,7 +187,7 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 			// 向左滑
 			createGridView();
 			int[] times = DateUtil.getDay(dateAdapter.getCurrentYear(selectPostion), dateAdapter.getCurrentMonth(selectPostion), dateAdapter.getCurrentDay(selectPostion), 7);
-			dateAdapter = new WeekAdapter(mContext, times[0], times[1], times[2]);
+			dateAdapter = new CalendarWeekAdapter(mContext, times[0], times[1], times[2]);
 			gridView.setAdapter(dateAdapter);
 			tvDate.setText(dateAdapter.getCurrentYear(selectPostion) + "年"
 					+ dateAdapter.getCurrentMonth(selectPostion) + "月"
@@ -155,7 +203,7 @@ public class ScrollerWeek extends LinearLayout implements OnGestureListener{
 		} else if (e1.getX() - e2.getX() < -80) {
 			createGridView();
 			int[] times = DateUtil.getDay(dateAdapter.getCurrentYear(selectPostion), dateAdapter.getCurrentMonth(selectPostion), dateAdapter.getCurrentDay(selectPostion), -7);
-			dateAdapter = new WeekAdapter(mContext, times[0], times[1], times[2]);
+			dateAdapter = new CalendarWeekAdapter(mContext, times[0], times[1], times[2]);
 			gridView.setAdapter(dateAdapter);
 			tvDate.setText(dateAdapter.getCurrentYear(selectPostion) + "年"
 					+ dateAdapter.getCurrentMonth(selectPostion) + "月"
